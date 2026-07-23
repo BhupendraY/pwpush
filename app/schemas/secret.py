@@ -17,3 +17,15 @@ class SecretCreate(BaseModel):
     )
 
     password: str | None = None
+
+
+class SecretViewRequest(BaseModel):
+    password: str | None = Field(default=None, min_length=1, max_length=128)
+
+
+class SecretViewResponse(BaseModel):
+    success: bool = True
+    secret: str
+    views_remaining: int
+    is_deleted: bool
+    expires_at: str
