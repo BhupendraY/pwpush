@@ -1,5 +1,12 @@
+import sys
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+# Allow `uvicorn main:app --reload` when started from the `app` directory.
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.database.database import Base, engine
 from app.routers.auth import router as auth_router
