@@ -54,6 +54,10 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('auth_user')
   }
 
+  const updateUser = (updates) => {
+    setUser((currentUser) => (currentUser ? { ...currentUser, ...updates } : currentUser))
+  }
+
   const value = useMemo(
     () => ({
       token,
@@ -63,6 +67,7 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      updateUser,
     }),
     [token, user, loading]
   )

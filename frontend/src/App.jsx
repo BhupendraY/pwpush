@@ -8,6 +8,12 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import CreateSecret from './pages/CreateSecret'
+import MySecrets from './pages/MySecrets'
+import Profile from './pages/Profile'
+import UpdateProfile from './pages/UpdateProfile'
+import ChangePassword from './pages/ChangePassword'
+import ShareText from './pages/ShareText'
+import ReceiveText from './pages/ReceiveText'
 import ViewSecret from './pages/ViewSecret'
 import NotFound from './pages/NotFound'
 
@@ -32,6 +38,12 @@ function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="create-secret" element={<CreateSecret />} />
+          <Route path="my-secrets" element={<MySecrets />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="profile/edit" element={<UpdateProfile />} />
+          <Route path="profile/change-password" element={<ChangePassword />} />
+          <Route path="share-text" element={<ShareText />} />
+          <Route path="receive-text" element={<ReceiveText />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

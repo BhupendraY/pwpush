@@ -125,4 +125,64 @@ def view_secret(
         "is_deleted": secret.is_deleted,
         "expires_at": secret.expires_at.isoformat()
     }
+    
+    from datetime import datetime
+
+@router.get("/")
+def my_secrets(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+
+    now = datetime.utcnow()
+
+    secrets = (
+        db.query(Secret)
+        .filter(
+            Secret.user_id == current_user.id
+        )
+        .order_by(Secret.created_at.desc())
+        .all()
+    )
+
+    data = []
+
+    for item in secrets:
+
+        if item.is_deleted:
+            status = "Deleted"
+
+        elif item.expires_at <= now:
+            status = "Expired"
+
+        else:
+            status = "Active"
+
+        data.append({
+
+            "id": item.id,
+
+            "token": item.token,
+
+            "views_remaining": item.views_remaining,
+
+            "expires_at": item.expires_at,
+
+            "created_at": item.created_at,
+
+            "status": status,
+
+            "share_url": f"http://localhost:5173/s/{item.token}"
+
+        })
+
+    return {
+
+        "success": True,
+
+        "total": len(data),
+
+        "data": data
+
+    }
 

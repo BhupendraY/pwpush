@@ -41,11 +41,7 @@ export const secretApi = {
     }
   },
   list: async () => {
-    try {
-      return await api.get('/secrets')
-    } catch {
-      return { data: [] }
-    }
+    return api.get('/secrets/')
   },
   remove: async (id) => {
     try {
@@ -54,6 +50,21 @@ export const secretApi = {
       return api.delete(`/secrets/${id}/`)
     }
   },
+}
+
+export const dashboardApi = {
+  get: () => api.get('/dashboard/'),
+}
+
+export const profileApi = {
+  get: () => api.get('/profile/'),
+  update: (payload) => api.put('/profile/', payload),
+  changePassword: (payload) => api.post('/profile/change-password', payload),
+}
+
+export const textShareApi = {
+  create: (content) => api.post('/text-shares/', { content }),
+  receive: (code) => api.post('/text-shares/receive', { code }),
 }
 
 export default api

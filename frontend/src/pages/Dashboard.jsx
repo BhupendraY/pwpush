@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
-import { secretApi } from '../services/api'
+import { useEffect, useState } from 'react'
+import { dashboardApi } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 
 function Dashboard() {
   const { user } = useAuth()
   const [secrets, setSecrets] = useState([])
+  const [stats, setStats] = useState({ total: 0, active: 0, expired: 0, deleted: 0 })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -13,8 +14,9 @@ function Dashboard() {
       setLoading(true)
       setError('')
       try {
-        const { data } = await secretApi.list()
-        setSecrets(Array.isArray(data) ? data : [])
+        const { data } = await dashboardApi.get()
+        setSecrets(Array.isArray(data?.recent_secrets) ? data.recent_secrets : [])
+        setStats(data?.stats || { total: 0, active: 0, expired: 0, deleted: 0 })
       } catch {
         setError('Unable to load secrets right now.')
       } finally {
@@ -24,35 +26,6 @@ function Dashboard() {
 
     load()
   }, [])
-
-  const stats = useMemo(() => {
-    const total = secrets.length
-    const now = new Date()
-
-    const active = secrets.filter((item) => {
-      const expiresAt = item.expires_at ? new Date(item.expires_at) : null
-      return !item.is_deleted && (!expiresAt || expiresAt > now)
-    }).length
-
-    const expired = secrets.filter((item) => {
-      if (!item.expires_at) return false
-      return new Date(item.expires_at) <= now
-    }).length
-
-    const deleted = secrets.filter((item) => item.is_deleted).length
-
-    return { total, active, expired, deleted }
-  }, [secrets])
-
-  const handleDelete = async (id) => {
-    if (!id) return
-    try {
-      await secretApi.remove(id)
-      setSecrets((prev) => prev.filter((item) => item.id !== id))
-    } catch {
-      setError('Unable to delete secret.')
-    }
-  }
 
   return (
     <div className="space-y-6">
@@ -90,39 +63,31 @@ function Dashboard() {
                 <th className="px-4 py-3">Views</th>
                 <th className="px-4 py-3">Expires</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="5" className="px-4 py-4 text-slate-500">Loading secrets...</td>
+                  <td colSpan="4" className="px-4 py-4 text-slate-500">Loading secrets...</td>
                 </tr>
               ) : secrets.length ? (
                 secrets.slice(0, 8).map((item) => (
                   <tr key={item.id || item.token} className="border-t border-slate-100 dark:border-slate-800">
                     <td className="px-4 py-3 font-mono text-xs text-slate-700 dark:text-slate-300">{item.token || '-'}</td>
                     <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{item.views_remaining ?? '-'}</td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{item.expires_at || '-'}</td>
-                    <td className="px-4 py-3">
-                      <span className="rounded-full bg-indigo-100 px-2 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-200">
-                        {item.is_deleted ? 'Deleted' : 'Active'}
-                      </span>
+                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
+                      {item.expires_at ? new Date(item.expires_at).toLocaleString() : '-'}
                     </td>
                     <td className="px-4 py-3">
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(item.id)}
-                        className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-rose-500"
-                      >
-                        Delete
-                      </button>
+                      <span className="rounded-full bg-indigo-100 px-2 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-200">
+                        {item.status || 'Active'}
+                      </span>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="px-4 py-4 text-slate-500">No secrets found yet.</td>
+                  <td colSpan="4" className="px-4 py-4 text-slate-500">No secrets found yet.</td>
                 </tr>
               )}
             </tbody>

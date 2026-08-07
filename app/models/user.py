@@ -18,7 +18,9 @@ class User(Base):
     name = Column(String(100), nullable=False)
 
     email = Column(
-        String(255),
+        # 191 characters keeps the UTF-8 index within the 1000-byte limit of
+        # older MySQL/MariaDB installations (191 * 4 = 764 bytes).
+        String(191),
         unique=True,
         nullable=False,
         index=True

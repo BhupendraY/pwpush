@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { FiHome, FiKey, FiList, FiLogOut, FiUser } from 'react-icons/fi'
+import { FiDownload, FiHome, FiKey, FiList, FiLogOut, FiSend, FiUser } from 'react-icons/fi'
 import { useAuth } from '../context/AuthContext'
 
 function DashboardLayout() {
@@ -20,8 +20,11 @@ function DashboardLayout() {
         <nav className="mt-5 space-y-2">
           <NavLink to="/dashboard" end className={({ isActive }) => `dash-link ${isActive ? 'active' : ''}`}><FiHome /> Dashboard</NavLink>
           <NavLink to="/dashboard/create-secret" className={({ isActive }) => `dash-link ${isActive ? 'active' : ''}`}><FiKey /> Create Secret</NavLink>
-          <NavLink to="/dashboard" className={({ isActive }) => `dash-link ${isActive ? 'active' : ''}`}><FiList /> My Secrets</NavLink>
-          <NavLink to="/dashboard" className={({ isActive }) => `dash-link ${isActive ? 'active' : ''}`}><FiUser /> Profile</NavLink>
+          <p className="px-3 pt-3 text-xs font-bold uppercase tracking-wider text-slate-400">Text transfer</p>
+          <NavLink to="/dashboard/share-text" className={({ isActive }) => `dash-link ${isActive ? 'active' : ''}`}><FiSend /> Share Text</NavLink>
+          <NavLink to="/dashboard/receive-text" className={({ isActive }) => `dash-link ${isActive ? 'active' : ''}`}><FiDownload /> Receive Text</NavLink>
+          <NavLink to="/dashboard/my-secrets" className={({ isActive }) => `dash-link ${isActive ? 'active' : ''}`}><FiList /> My Secrets</NavLink>
+          <NavLink to="/dashboard/profile" className={({ isActive }) => `dash-link ${isActive ? 'active' : ''}`}><FiUser /> My Profile</NavLink>
           <button type="button" onClick={handleLogout} className="dash-link w-full text-left"><FiLogOut /> Logout</button>
         </nav>
       </aside>

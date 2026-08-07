@@ -11,6 +11,10 @@ if __package__ in (None, ""):
 from app.database.database import Base, engine
 from app.routers.auth import router as auth_router
 from app.routers.secret import router as secret_router
+from app.routers.dashboard import router as dashboard_router
+from app.routers.profile import router as profile_router
+from app.routers.text_share import router as text_share_router
+
 app = FastAPI(title="PWPH")
 
 app.add_middleware(
@@ -26,6 +30,9 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(secret_router, prefix="/api/v1")
+app.include_router(dashboard_router, prefix="/api/v1")
+app.include_router(profile_router, prefix="/api/v1")
+app.include_router(text_share_router, prefix="/api/v1")
 
 @app.get("/")
 def root():
